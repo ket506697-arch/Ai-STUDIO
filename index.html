@@ -9,7 +9,8 @@
         h1 { color: #38bdf8; text-align: center; }
         .form-group { margin-bottom: 20px; }
         label { display: block; margin-bottom: 8px; font-weight: bold; color: #cbd5e1; }
-        input, textarea, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; box-sizing: border-box; }
+        input[type="text"], textarea, select, input[type="file"] { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; box-sizing: border-box; }
+        input[type="file"] { cursor: pointer; padding: 9px; }
         button { background: #0ea5e9; color: white; border: none; padding: 14px 20px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; transition: background 0.2s; }
         button:hover { background: #0284c7; }
         #result { margin-top: 25px; padding: 15px; background: #0f172a; border-radius: 8px; border: 1px solid #334155; white-space: pre-wrap; }
@@ -30,13 +31,18 @@
         </div>
 
         <div class="form-group">
-            <label>Внешность персонажей (для сохранения идентичности во всех сериях):</label>
-            <textarea id="characters" rows="3" placeholder="Главный герой: парень 25 лет, шрам на левой брови, кибернетическая рука, кожаная куртка..."></textarea>
+            <label>Внешность персонажей (текстовое описание):</label>
+            <textarea id="characters" rows="3" placeholder="Главный герой: парень 25 лет, шрам на левой брови, кибернетическая рука..."></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Загрузить фото / референс персонажа:</label>
+            <input type="file" id="charImage" accept="image/*">
         </div>
 
         <div class="form-group">
             <label>Сценарий текущей серии (диалоги, движения, сцена):</label>
-            <textarea id="prompt" rows="4" placeholder="Сцена 1: Герой заходит в неоновый бар, ведет диалог с барменом, затем резко достает бластер..."></textarea>
+            <textarea id="prompt" rows="4" placeholder="Сцена 1: Герой заходит в неоновый бар..."></textarea>
         </div>
 
         <button onclick="generateEpisode()">Запустить генерацию серии</button>
@@ -45,18 +51,37 @@
     </div>
 
     <script>
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
         async function generateEpisode() {
             const resultDiv = document.getElementById('result');
             resultDiv.style.display = 'block';
-            resultDiv.innerHTML = '⏳ Отправка задания на генерацию видео и связывание персонажей...';
+            resultDiv.innerHTML = '⏳ Обработка фото, отправка задания и связывание персонажей...';
+
+            const fileInput = document.getElementById('charImage');
+            let imageBase64 = null;
+            if (fileInput.files && fileInput.files[0]) {
+                try {
+                    imageBase64 = await fileToBase64(fileInput.files[0]);
+                } catch (e) {
+                    console.error("Ошибка чтения файла", e);
+                }
+            }
 
             const data = {
                 title: document.getElementById('showTitle').value,
                 episode: document.getElementById('episodeNum').value,
                 characters: document.getElementById('characters').value,
+                characterImage: imageBase64,
                 prompt: document.getElementById('prompt').value
             };
-
             try {
                 const response = await fetch('/api/generate', {
                     method: 'POST',
@@ -66,7 +91,7 @@
                 const res = await response.json();
                 
                 if (res.success) {
-                    resultDiv.innerHTML = ✅ ${res.message}\n\n📦 Данные серии переданы в Cloudflare Worker:\n- Проект: ${res.episodeData.title}\n- Эпизод: ${res.episodeData.episode}\n- Персонажи зафиксированы. Генерация видеоряда запущена!;
+                    resultDiv.innerHTML = ✅ ${res.message}\n\n📦 Данные серии переданы в Cloudflare Worker:\n- Проект: ${res.episodeData.title}\n- Эпизод: ${res.episodeData.episode}\n- Фото персонажа загружено: ${imageBase64 ? 'Да' : 'Нет'}\nГенерация видеоряда запущена!;
                 } else {
                     resultDiv.innerHTML = ❌ Ошибка: ${res.error};
                 }
