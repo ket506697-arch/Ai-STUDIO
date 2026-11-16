@@ -1,285 +1,79 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI STUDIO — ИИ генерация фото и видео</title>
-
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  background: #090b12;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-
-header {
-  padding: 22px 7%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #252938;
-}
-
-.logo {
-  font-size: 27px;
-  font-weight: bold;
-  letter-spacing: 2px;
-}
-
-.logo span {
-  color: #a78bfa;
-}
-
-header small {
-  color: #aaa;
-}
-
-main {
-  max-width: 950px;
-  margin: 55px auto;
-  padding: 20px;
-}
-
-h1 {
-  text-align: center;
-  font-size: 42px;
-}
-
-.subtitle {
-  text-align: center;
-  color: #aaa;
-  margin-bottom: 35px;
-}
-
-.panel {
-  background: #151925;
-  border: 1px solid #30374b;
-  border-radius: 18px;
-  padding: 25px;
-}
-
-.tabs {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 25px;
-}
-
-button {
-  cursor: pointer;
-  border: 0;
-  border-radius: 10px;
-  padding: 14px 20px;
-  font-size: 15px;
-}
-
-.tab {
-  background: #252c3d;
-  color: white;
-  flex: 1;
-}
-
-.tab.active,
-.generate {
-  background: linear-gradient(100deg, #7957ef, #b45ce5);
-  color: white;
-}
-
-label {
-  display: block;
-  margin: 20px 0 9px;
-}
-
-textarea,
-select,
-input {
-  width: 100%;
-  padding: 15px;
-  border-radius: 10px;
-  border: 1px solid #3b4358;
-  background: #0d111b;
-  color: white;
-  font-size: 15px;
-}
-
-textarea {
-  height: 120px;
-  resize: vertical;
-}
-
-.generate {
-  width: 100%;
-  margin-top: 25px;
-  font-weight: bold;
-}
-
-.status {
-  margin-top: 20px;
-  padding: 15px;
-  background: #20283a;
-  border-radius: 10px;
-  color: #c4b5fd;
-  line-height: 1.5;
-}
-
-.note {
-  color: #999;
-  font-size: 13px;
-  line-height: 1.6;
-}
-
-footer {
-  text-align: center;
-  color: #777;
-  padding: 35px;
-}
-
-@media (max-width: 600px) {
-  h1 {
-    font-size: 30px;
-  }
-
-  main {
-    margin: 20px auto;
-  }
-
-  .panel {
-    padding: 17px;
-  }
-
-  header {
-    padding: 18px;
-  }
-}
-</style>
+    <meta charset="UTF-8">
+    <title>AI STUDIO — Сериалы и видео по сериям</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; background: #1e293b; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        h1 { color: #38bdf8; text-align: center; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #cbd5e1; }
+        input, textarea, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; box-sizing: border-box; }
+        button { background: #0ea5e9; color: white; border: none; padding: 14px 20px; border-radius: 8px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold; transition: background 0.2s; }
+        button:hover { background: #0284c7; }
+        #result { margin-top: 25px; padding: 15px; background: #0f172a; border-radius: 8px; border: 1px solid #334155; white-space: pre-wrap; }
+    </style>
 </head>
-
 <body>
+    <div class="container">
+        <h1>AI STUDIO: Генератор Сериалов</h1>
+        
+        <div class="form-group">
+            <label>Название сериала или проекта:</label>
+            <input type="text" id="showTitle" placeholder="Например: Киберпанк: Новая эра">
+        </div>
 
-<header>
-  <div class="logo">AI <span>STUDIO</span></div>
-  <small>AI PHOTO & VIDEO</small>
-</header>
+        <div class="form-group">
+            <label>Номер серии / Продолжение сюжета:</label>
+            <input type="text" id="episodeNum" value="Серия 1: Начало" placeholder="Серия 1, Серия 2...">
+        </div>
 
-<main>
+        <div class="form-group">
+            <label>Внешность персонажей (для сохранения идентичности во всех сериях):</label>
+            <textarea id="characters" rows="3" placeholder="Главный герой: парень 25 лет, шрам на левой брови, кибернетическая рука, кожаная куртка..."></textarea>
+        </div>
 
-<h1>Создавай без границ</h1>
+        <div class="form-group">
+            <label>Сценарий текущей серии (диалоги, движения, сцена):</label>
+            <textarea id="prompt" rows="4" placeholder="Сцена 1: Герой заходит в неоновый бар, ведет диалог с барменом, затем резко достает бластер..."></textarea>
+        </div>
 
-<p class="subtitle">
-Создавай реалистичные фотографии и видео с помощью ИИ
-</p>
+        <button onclick="generateEpisode()">Запустить генерацию серии</button>
 
-<div class="panel">
+        <div id="result" style="display:none;"></div>
+    </div>
 
-<div class="tabs">
-  <button class="tab active" id="photoTab"
-  onclick="setMode('photo')">
-  📷 Фото
-  </button>
+    <script>
+        async function generateEpisode() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '⏳ Отправка задания на генерацию видео и связывание персонажей...';
 
-  <button class="tab" id="videoTab"
-  onclick="setMode('video')">
-  🎬 Видео
-  </button>
-</div>
+            const data = {
+                title: document.getElementById('showTitle').value,
+                episode: document.getElementById('episodeNum').value,
+                characters: document.getElementById('characters').value,
+                prompt: document.getElementById('prompt').value
+            };
 
-<label for="prompt">
-Опиши, что ты хочешь создать
-</label>
-
-<textarea id="prompt"
-placeholder="Например: реалистичный портрет человека на фоне красивого города..."></textarea>
-
-<label for="reference">
-Фотография персонажа (необязательно)
-</label>
-
-<input type="file" id="reference" accept="image/*">
-
-<div id="durationBox" style="display:none">
-
-<label for="duration">
-Длительность видео
-</label>
-
-<select id="duration">
-  <option value="10">10 секунд — бесплатно</option>
-  <option value="20">20 секунд — платно</option>
-  <option value="30">30 секунд — платно</option>
-  <option value="60">1 минута — платно</option>
-  <option value="120">2 минуты — платно</option>
-  <option value="300">5 минут — платно</option>
-</select>
-
-</div>
-
-<button class="generate" onclick="generate()">
-✨ Создать
-</button>
-
-<div class="status" id="status">
-Добро пожаловать в AI STUDIO!
-</div>
-
-<p class="note">
-Бесплатные видео до 10 секунд будут обрабатываться через очередь.
-Более длинные видео требуют оплаты.
-Сейчас это демонстрационный интерфейс.
-Настоящая ИИ-генерация, очередь и платежи ещё не подключены.
-</p>
-
-</div>
-</main>
-
-<footer>
-© 2026 AI STUDIO. Все права защищены.
-</footer>
-
-<script>
-
-let mode = 'photo';
-
-function setMode(value) {
-
-  mode = value;
-
-  document.getElementById('photoTab')
-  .classList.toggle('active', value === 'photo');
-
-  document.getElementById('videoTab')
-  .classList.toggle('active', value === 'video');
-
-  document.getElementById('durationBox')
-  .style.display = value === 'video' ? 'block' : 'none';
-  document.getElementById('status').textContent =
-  value === 'photo'
-  ? 'Режим создания фотографий'
-  : 'Режим создания видео';
-}
-
-function generate() {
-
-  const prompt = document
-  .getElementById('prompt')
-  .value.trim();
-
-  if (!prompt) {
-
-    document.getElementById('status').textContent =
-    'Сначала опиши свою идею.';
-
-    return;
-  }
-
-  document.getElementById('status').textContent =
-  'Демонстрация: интерфейс работает, но ИИ-генерация пока не подключена. Задание не отправлено.';
-}
-
-</script>
-
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const res = await response.json();
+                
+                if (res.success) {
+                    resultDiv.innerHTML = ✅ ${res.message}\n\n📦 Данные серии переданы в Cloudflare Worker:\n- Проект: ${res.episodeData.title}\n- Эпизод: ${res.episodeData.episode}\n- Персонажи зафиксированы. Генерация видеоряда запущена!;
+                } else {
+                    resultDiv.innerHTML = ❌ Ошибка: ${res.error};
+                }
+            } catch (err) {
+                resultDiv.innerHTML = ❌ Ошибка сети: ${err.message};
+            }
+        }
+    </script>
 </body>
 </html>
