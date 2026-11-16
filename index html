@@ -1,0 +1,75 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI STUDIO</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0c0b13;color:#fff;font-family:Arial,sans-serif}
+header{padding:24px 18px;border-bottom:1px solid #30283e}
+h1{color:#bd91ff;margin:0}
+main{max-width:650px;margin:35px auto;padding:18px}
+.panel{background:#191522;border:1px solid #40334f;border-radius:18px;padding:22px}
+h2{margin-top:0}
+.tabs{display:flex;gap:10px;margin:20px 0}
+button,select,textarea{font:inherit;border-radius:10px;padding:13px}
+button{border:0;background:#8d55dc;color:white;font-weight:bold}
+.tabs button{flex:1;background:#30263d}
+.tabs button.active{background:#8d55dc}
+textarea,select{width:100%;background:#100e18;color:white;border:1px solid #51435f;margin:8px 0 18px}
+textarea{min-height:110px;resize:vertical}
+label{display:block;color:#d8cce7}
+.note{color:#b7a9c8;font-size:14px;line-height:1.5}
+#result{margin-top:18px;padding:14px;background:#100e18;border-radius:10px}
+</style>
+</head>
+<body>
+<header><h1>✦ AI STUDIO</h1></header>
+<main>
+<div class="panel">
+<h2>Создай своё изображение или видео</h2>
+<p class="note">Твоя творческая студия искусственного интеллекта</p>
+<div class="tabs">
+<button id="photo" class="active" onclick="setMode('photo')">Фото</button>
+<button id="video" onclick="setMode('video')">Видео</button>
+</div>
+<label for="prompt">Опиши, что хочешь создать</label>
+<textarea id="prompt" placeholder="Например: реалистичный кинематографичный портрет, мягкий свет..."></textarea>
+<div id="durationBox" style="display:none">
+<label for="duration">Длительность видео</label>
+<select id="duration">
+<option value="10">10 секунд — бесплатно</option>
+<option value="20">20 секунд — платно</option>
+<option value="30">30 секунд — платно</option>
+<option value="60">1 минута — платно</option>
+<option value="120">2 минуты — платно</option>
+<option value="300">5 минут — платно</option>
+</select>
+</div>
+<button style="width:100%" onclick="addJob()">Добавить в очередь</button>
+<div id="result" class="note">Очередь пока пуста.</div>
+</div>
+<p class="note">Демонстрационная версия. Подключение настоящих ИИ-моделей и обработки заданий будет следующим этапом.</p>
+</main>
+<script>
+let mode='photo';
+function setMode(value){
+ mode=value;
+ document.getElementById('photo').classList.toggle('active',mode==='photo');
+ document.getElementById('video').classList.toggle('active',mode==='video');
+ document.getElementById('durationBox').style.display=mode==='video'?'block':'none';
+}
+function addJob(){
+ const prompt=document.getElementById('prompt').value.trim();
+ if(!prompt){alert('Сначала напиши описание');return;}
+ const duration=document.getElementById('duration').value;
+ const item=document.createElement('p');
+ item.textContent=(mode==='photo'?'Фото':'Видео '+duration+' сек')+' — Ожидает подключения ИИ: '+prompt;
+ document.getElementById('result').appendChild(item);
+ document.getElementById('prompt').value='';
+}
+</script>
+</body>
+</html>
