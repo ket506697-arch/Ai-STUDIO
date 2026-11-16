@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI STUDIO — ИИ генерация фото и видео</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #090b12;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 22px 7%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #252938;
+}
+
+.logo {
+  font-size: 27px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.logo span {
+  color: #a78bfa;
+}
+
+header small {
+  color: #aaa;
+}
+
+main {
+  max-width: 950px;
+  margin: 55px auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 42px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #aaa;
+  margin-bottom: 35px;
+}
+
+.panel {
+  background: #151925;
+  border: 1px solid #30374b;
+  border-radius: 18px;
+  padding: 25px;
+}
+
+.tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 10px;
+  padding: 14px 20px;
+  font-size: 15px;
+}
+
+.tab {
+  background: #252c3d;
+  color: white;
+  flex: 1;
+}
+
+.tab.active,
+.generate {
+  background: linear-gradient(100deg, #7957ef, #b45ce5);
+  color: white;
+}
+
+label {
+  display: block;
+  margin: 20px 0 9px;
+}
+
+textarea,
+select,
+input {
+  width: 100%;
+  padding: 15px;
+  border-radius: 10px;
+  border: 1px solid #3b4358;
+  background: #0d111b;
+  color: white;
+  font-size: 15px;
+}
+
+textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+.generate {
+  width: 100%;
+  margin-top: 25px;
+  font-weight: bold;
+}
+
+.status {
+  margin-top: 20px;
+  padding: 15px;
+  background: #20283a;
+  border-radius: 10px;
+  color: #c4b5fd;
+  line-height: 1.5;
+}
+
+.note {
+  color: #999;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+footer {
+  text-align: center;
+  color: #777;
+  padding: 35px;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 30px;
+  }
+
+  main {
+    margin: 20px auto;
+  }
+
+  .panel {
+    padding: 17px;
+  }
+
+  header {
+    padding: 18px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">AI <span>STUDIO</span></div>
+  <small>AI PHOTO & VIDEO</small>
+</header>
+
+<main>
+
+<h1>Создавай без границ</h1>
+
+<p class="subtitle">
+Создавай реалистичные фотографии и видео с помощью ИИ
+</p>
+
+<div class="panel">
+
+<div class="tabs">
+  <button class="tab active" id="photoTab"
+  onclick="setMode('photo')">
+  📷 Фото
+  </button>
+
+  <button class="tab" id="videoTab"
+  onclick="setMode('video')">
+  🎬 Видео
+  </button>
+</div>
+
+<label for="prompt">
+Опиши, что ты хочешь создать
+</label>
+
+<textarea id="prompt"
+placeholder="Например: реалистичный портрет человека на фоне красивого города..."></textarea>
+
+<label for="reference">
+Фотография персонажа (необязательно)
+</label>
+
+<input type="file" id="reference" accept="image/*">
+
+<div id="durationBox" style="display:none">
+
+<label for="duration">
+Длительность видео
+</label>
+
+<select id="duration">
+  <option value="10">10 секунд — бесплатно</option>
+  <option value="20">20 секунд — платно</option>
+  <option value="30">30 секунд — платно</option>
+  <option value="60">1 минута — платно</option>
+  <option value="120">2 минуты — платно</option>
+  <option value="300">5 минут — платно</option>
+</select>
+
+</div>
+
+<button class="generate" onclick="generate()">
+✨ Создать
+</button>
+
+<div class="status" id="status">
+Добро пожаловать в AI STUDIO!
+</div>
+
+<p class="note">
+Бесплатные видео до 10 секунд будут обрабатываться через очередь.
+Более длинные видео требуют оплаты.
+Сейчас это демонстрационный интерфейс.
+Настоящая ИИ-генерация, очередь и платежи ещё не подключены.
+</p>
+
+</div>
+</main>
+
+<footer>
+© 2026 AI STUDIO. Все права защищены.
+</footer>
+
+<script>
+
+let mode = 'photo';
+
+function setMode(value) {
+
+  mode = value;
+
+  document.getElementById('photoTab')
+  .classList.toggle('active', value === 'photo');
+
+  document.getElementById('videoTab')
+  .classList.toggle('active', value === 'video');
+
+  document.getElementById('durationBox')
+  .style.display = value === 'video' ? 'block' : 'none';
+  document.getElementById('status').textContent =
+  value === 'photo'
+  ? 'Режим создания фотографий'
+  : 'Режим создания видео';
+}
+
+function generate() {
+
+  const prompt = document
+  .getElementById('prompt')
+  .value.trim();
+
+  if (!prompt) {
+
+    document.getElementById('status').textContent =
+    'Сначала опиши свою идею.';
+
+    return;
+  }
+
+  document.getElementById('status').textContent =
+  'Демонстрация: интерфейс работает, но ИИ-генерация пока не подключена. Задание не отправлено.';
+}
+
+</script>
+
+</body>
+</html>
