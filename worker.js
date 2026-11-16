@@ -1,26 +1,32 @@
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    if (url.pathname === '/api/generate') {
-      if (request.method !== 'POST') {
-        return new Response('Method not allowed', { status: 405 });
-      }
-
+    if (url.pathname === '/api/generate' && request.method === 'POST') {
       try {
-        const body = await request.json();
-        
-        // Здесь настраивается связка с моделью генерации видео и сохранением персонажей
-        return Response.json({
+        const data = await request.json();
+        return new Response(JSON.stringify({
           success: true,
-          message: "Генерация серии успешно запущена!",
-          episodeData: body
+          message: 'Запрос успешно обработан бэкендом!',
+          episodeData: {
+            title: data.title || 'Без названия',
+            episode: data.episode || 'Серия 1',
+            hasImage: !!data.characterImage
+          }
+        }), {
+          headers: { 'Content-Type': 'application/json; charset=utf-8' }
         });
       } catch (err) {
-        return Response.json({ success: false, error: err.message }, { status: 500 });
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'Ошибка чтения данных: ' + err.message
+        }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json; charset=utf-8' }
+        });
       }
     }
 
-    return env.ASSETS.fetch(request);
+    return new Response('AI STUDIO Worker активен!', { status: 200 });
   }
 };
